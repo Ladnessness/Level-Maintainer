@@ -1,8 +1,9 @@
+local term = require("term")
+local gpu = require("component").gpu
+
 function dump(o, depth)
     if depth == nil then depth = 0 end
-
     if depth > 10 then return "..." end
-
     if type(o) == 'table' then
         local s = '{ '
         for k, v in pairs(o) do
@@ -13,7 +14,6 @@ function dump(o, depth)
     else
         return tostring(o)
     end
-
 end
 
 function parser(string)
@@ -28,8 +28,19 @@ function parser(string)
     end
 end
 
-function logInfo(string)
-    if type(string) == "string" then
-        print("[" .. os.date("%H:%M:%S") .. "] " .. string)
+function logInfo(message, status)
+    if type(message) == "string" then
+        local gpu = require("component").gpu
+        if status == "threshold" then
+            gpu.setForeground(0x00FF00)  -- green: item exceeds threshold
+        elseif status == "requested" then
+            gpu.setForeground(0xFFFF00)  -- yellow: item was requested
+        elseif status == "failed" then
+            gpu.setForeground(0xFF0000)  -- red: request failed
+        else
+            gpu.setForeground(0xFFFFFF)  -- white: default/unknown
+        end
+        print("[" .. os.date("%H:%M:%S") .. "] " .. message)
+        gpu.setForeground(0xFFFFFF)  -- reset to white after printing
     end
 end

@@ -16,7 +16,7 @@ wget https://raw.githubusercontent.com/Niels1006/Infinite-Maintainer/master/inst
 
 Run it
 ```bash
-Maintainer
+Maintain
 ```
 
 # Config

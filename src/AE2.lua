@@ -4,38 +4,32 @@ local ME = component.me_interface
 local AE2 = {}
 
 function AE2.requestItem(name, threshold, count)
-    craftables = ME.getCraftables({
-        ["label"] = name
-    })
+    craftables = ME.getCraftables({ ["label"] = name })
 
     if #craftables >= 1 then
         item = craftables[1].getItemStack()
         if threshold ~= nil then
-            itemInSystem = ME.getItemsInNetwork({
-                ["label"] = name        
-            })
-            if (#itemInSystem > 0 and itemInSystem[1]["size"] > threshold) then 
-                return table.unpack({false, "The amount of " .. itemInSystem[1]["label"] .. " exceeds threshold! Aborting request."})
+            itemInSystem = ME.getItemsInNetwork({ ["label"] = name })
+            if (#itemInSystem > 0 and itemInSystem[1]["size"] > threshold) then
+                return table.unpack({false, "The amount of " .. itemInSystem[1]["label"] .. " exceeds threshold! Aborting request.", "threshold"})
             end
         end
         if item.label == name then
             local craft = craftables[1].request(count)
-
             while craft.isComputing() == true do
                 os.sleep(1)
             end
             if craft.hasFailed() then
-                return table.unpack({false, "Failed to request " .. name .. " x " .. count})
+                return table.unpack({false, "Failed to request " .. name .. " x " .. count, "failed"})
             else
-                return table.unpack({true, "Requested " .. name .. " x " .. count})
+                return table.unpack({true, "Requested " .. name .. " x " .. count, "requested"})
             end
-
         end
     end
-    return table.unpack({false, name .. " is not craftable!"})
+    return table.unpack({false, name .. " is not craftable!", "failed"})
 end
 
-function  AE2.checkIfCrafting()
+function AE2.checkIfCrafting()
     local cpus = ME.getCpus()
     local items = {}
     for k, v in pairs(cpus) do
@@ -44,7 +38,6 @@ function  AE2.checkIfCrafting()
             items[finaloutput.label] = true
         end
     end
-
     return items
 end
 
